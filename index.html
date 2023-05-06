@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>TalkTales</title>
+    <!-- Add some CSS to change client UI -->
+
+  <link rel="stylesheet" href="index.css">
+    <script>
+        // define the callAPI function that takes a first name and last name as parameters
+        var callAPI = (query)=>{
+            // instantiate a headers object
+            var element = document.getElementById("response");
+            var myHeaders = new Headers();
+            // add content type header to object
+            myHeaders.append("Content-Type", "application/json");
+            // using built in JSON utility package turn object to string and store in a variable
+            var raw = JSON.stringify(
+                {"data": {
+                    "text_inputs": query,
+                    "max_length": 5000,
+                    "num_return_sequences": 3,
+                    "top_k": 50,
+                    "top_p": 0.95,
+                    "do_sample": true,
+                    "max_time": 300}})
+            // create a JSON object with parameters for API call and store in a variable
+            var requestOptions = {
+                method: 'POST',
+                headers: myHeaders,
+                body: raw,
+                redirect: 'follow'
+            };
+            // make API call with parameters and use promises to get response
+            fetch("https://tpe1gqjf7a.execute-api.us-east-1.amazonaws.com/dev", requestOptions)
+            .then(response => response.text())
+            .then(result => element.innerHTML = (JSON.parse(result).body))
+            .catch(error => console.log('error', error));
+        }
+    </script>
+</head>
+<body>
+    <div class="center">
+    <form>
+        <label>Enter your Question here: </label>
+        <input type="text" id="input_query">
+        <!-- set button onClick method to call function we defined passing input values as parameters -->
+        <button type="button" onclick="callAPI(document.getElementById('input_query').value)">Let's chat!</button>
+        </form>
+  <h1 id="response">Initial Text</h1>
+  </div> 
+</body>
+</html>
